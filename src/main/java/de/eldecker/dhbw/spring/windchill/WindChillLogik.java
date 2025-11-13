@@ -1,5 +1,7 @@
 package de.eldecker.dhbw.spring.windchill;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 
@@ -9,7 +11,10 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class WindChillLogik {
+	
+	private static Logger LOG = LoggerFactory.getLogger( WindChillRestController.class );
 
+	
 	/** 
 	 * Berechnung der gefühlten Temperatur nach
 	 * <a href="https://de.wikipedia.org/wiki/Windchill#Aktuelle_Berechnung_und_Tabelle">Wikipedia</a>.
@@ -31,13 +36,22 @@ public class WindChillLogik {
 		
 		if ( physTemperatur < -50.0 || physTemperatur > 10.0 ) {
 			
-			throw new WindChillException( 
-					"Physische Temperatur " + physTemperatur + " Grad Celsius ausserhalb Bereich -50.0 und 10.0 Grad Celsius." );
+			final String fehlerText = 
+					"Physische Temperatur " + physTemperatur + " Grad Celsius ausserhalb Bereich -50.0 und 10.0 Grad Celsius.";
+			
+			LOG.error( fehlerText );
+			
+			throw new WindChillException( fehlerText ); 
+					 
 		}
 		if ( windgeschwindigkeit < 5.0 || windgeschwindigkeit > 60.0 ) {
+
+			final String fehlerText = 
+					"Windgeschwindigkeit " + windgeschwindigkeit + " km/h ausserhalb Bereich 5.0 km/h und 60 km/h.";
 			
-			throw new WindChillException( 
-					"Windgeschwindigkeit" + windgeschwindigkeit + " km/h ausserhalb Bereich 5.0 km/h und 60 km/h." );			
+			LOG.error( fehlerText );
+			
+			throw new WindChillException( fehlerText );			
 		}
 		
 		
