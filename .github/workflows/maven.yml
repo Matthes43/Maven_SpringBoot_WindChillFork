@@ -7,25 +7,36 @@ on:
 jobs:
   job-fatjar:
     runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        java-version: [21, 25]
+
     steps:
-    - name: Git-Repo auschecken
-      uses: actions/checkout@v4
-    - name: JDK einrichten
-      uses: actions/setup-java@v4
-      with:
-        java-version: 25
-        distribution: 'temurin'
-        cache: maven
-    - name: Maven-Wrapper ausführbar machen
-      run:  chmod u+x mvnw
-    - name: Maven-Installation checken
-      run: ./mvnw --version
-    - name: FatJar-Datei mit Maven bauen
-      run: ./mvnw --batch-mode clean package
-    - name: FatJar-Datei veröffentlichen
-      uses: actions/upload-artifact@v4
-      with:
-        name: WindChill_FatJar
-        path: target/windchill-*-SNAPSHOT.jar
-        if-no-files-found: error
-        retention-days: 3
+      - name: Git-Repo auschecken
+        uses: actions/checkout@v4
+
+      - name: JDK einrichten
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ matrix.java-version }}
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Maven-Wrapper ausführbar machen
+        run: chmod u+x mvnw
+
+      - name: Maven-Installation checken
+        run: ./mvnw --version
+
+      - name: FatJar-Datei mit Maven bauen
+        run: ./mvnw --batch-mode clean package
+
+      - name: FatJar-Datei veröffentlichen
+        uses: actions/upload-artifact@v4
+        with:
+          name: WindChill_FatJar_Java${{ matrix.java-version }}
+          path: target/windchill-*-SNAPSHOT.jar
+          if-no-files-found: error
+          retention-days: 3
